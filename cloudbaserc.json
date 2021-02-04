@@ -1,0 +1,21 @@
+{
+    "envId": "redsapi-9gtejk3n12548b8d",
+    "version": "2.0",
+    "$schema": "https://framework-1258016615.tcloudbaseapp.com/schema/latest.json",
+    "functionRoot": "./functions",
+    "functions": [],
+    "region": "ap-shanghai",
+    "framework": {
+        "name": "redskoa",
+        "plugins": {
+            "koa": {
+                "use": "@cloudbase/framework-plugin-node",
+                "inputs": {
+                    "name": "redskoa",
+                    "path": "/redskoa",
+                    "entry": "app.js"
+                }
+            }
+        }
+    }
+}
