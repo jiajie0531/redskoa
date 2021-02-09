@@ -1,5 +1,7 @@
 const weibo = require('weibo');
+const connect = require('connect');
 const axios = require('axios');
+const config = require('../config/weibo-config')
 const router = require('koa-router')()
 
 router.prefix('/weibo')
@@ -51,17 +53,17 @@ router.get('/cb', function (ctx, next) {
   }
 })
 
-router.get('/oauth2/access_token', function (ctx, next) { 
-  let url = 'https://api.weibo.com/oauth2/access_token?client_id=1120585538&client_secret=36ba3598818d0fef65809e8d03305be1&grant_type=authorization_code&redirect_uri=https://redsapi-9gtejk3n12548b8d-1258543641.ap-shanghai.app.tcloudbase.com/redskoa/weibo/cb&code=b96cec8eebfc13017343542251f30cf1'
-  axios.post(url, {
-    client_id: appkey,
-    client_secret: secret,
-    grant_type: 'authorization_code',
-    code: 'b96cec8eebfc13017343542251f30cf1',
-    redirect_uri: oauth_callback_url
+router.get('/oauth2/access_token', async function (ctx, next) { 
+  let url = 'https://api.weibo.com/oauth2/access_token?client_id=' + config.appkey + 
+  '&client_secret=' + config.secret + 
+  '&grant_type=authorization_code&redirect_uri=' + config.oauth_callback_url + 
+  '&code=f9ecd947740158d33eae094c9ac72c55'
+  
+  await axios.post(url, {
   })
   .then(function (response) {
     console.log(response);
+    ctx.body = response.data;
   })
   .catch(function (error) {
     console.log(error);
@@ -86,6 +88,55 @@ router.get('/users/show', function (ctx, next) {
     // always executed
   });  
   
+})
+
+router.get('/home_timeline', async function (ctx, next) { 
+  let url = 'https://api.weibo.com/2/statuses/home_timeline.json';
+
+  await axios.get(url, {
+    params: { 
+      access_token: '2.00JRBECCSUrpNBf94ad565f3jIhkBB',
+      feature: 1  
+    }
+  })
+  .then(function (response) {
+    console.log(response); 
+    ctx.body = response.data; 
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
+  .then(function () {
+    // always executed
+  }); 
+})
+
+router.get('/user_timeline', async function (ctx, next) { 
+  let url = 'https://api.weibo.com/2/statuses/user_timeline.json';
+
+  await axios.get(url, {
+    params: { 
+      access_token: '2.00JRBECCSUrpNBf94ad565f3jIhkBB',
+      uid: 1862776555,
+      feature: 1  
+    }
+  })
+  .then(function (response) {
+    console.log(response); 
+    ctx.body = response.data; 
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
+  .then(function () {
+    // always executed
+  }); 
+})
+
+router.get('/entry', async function (ctx, next) {
+  weibo.init('weibo', config.appkey, config.secret, config.oauth_callback_url);
+
+  console.log(weibo);
 })
 
 module.exports = router
