@@ -19,6 +19,7 @@ router.get('/login', async function (ctx, next) {
   })
   .then(function (response) {
     console.log(response); 
+    ctx.body = response.data;
   })
   .catch(function (error) {
     console.log(error);
@@ -26,7 +27,7 @@ router.get('/login', async function (ctx, next) {
   .then(function () {
     // always executed
   });  
-  ctx.body = "ok";
+  // ctx.body = "ok";
 })
 
 router.get('/cb', function (ctx, next) {

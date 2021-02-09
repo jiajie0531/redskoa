@@ -7,6 +7,7 @@ const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 
 const routers = require("./routes")
+const initDb = require("./models/init-db")
 
 // error handler
 onerror(app)
@@ -33,6 +34,7 @@ app.use(async (ctx, next) => {
 
 // routes
 routers(app)
+initDb()
 
 // error-handling
 app.on('error', (err, ctx) => {
