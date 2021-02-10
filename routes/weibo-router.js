@@ -1,5 +1,3 @@
-const weibo = require('weibo');
-const connect = require('connect');
 const axios = require('axios');
 const config = require('../config/weibo-config')
 const router = require('koa-router')()
@@ -134,9 +132,7 @@ router.get('/user_timeline', async function (ctx, next) {
 })
 
 router.get('/entry', async function (ctx, next) {
-  weibo.init('weibo', config.appkey, config.secret, config.oauth_callback_url);
-
-  console.log(weibo);
+  ctx.body = "ok" 
 })
 
 module.exports = router
