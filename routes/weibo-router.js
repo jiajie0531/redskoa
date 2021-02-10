@@ -1,12 +1,20 @@
 const axios = require('axios');
+const router = require('koa-router')() 
 const config = require('../config/weibo-config')
-const router = require('koa-router')()
+const passport = require('l-passport');
 
 router.prefix('/weibo')
-// change appkey to yours
-var appkey = '1120585538';
-var secret = '36ba3598818d0fef65809e8d03305be1';
-var oauth_callback_url = 'https://redsapi-9gtejk3n12548b8d-1258543641.ap-shanghai.app.tcloudbase.com/redskoa/weibo/cb';
+
+passport.initialize({
+  provider: 'weibo',
+  appId: config.appkey,
+  appSecret: config.secret,
+  redirect: config.oauth_callback_url
+});
+
+router.get('/login/oath', passport.authorization('weibo'), async (ctx) => { 
+  ctx.body = ctx.state.passport;
+});
 
 router.get('/login', async function (ctx, next) {  
   let myrsp;
@@ -132,7 +140,11 @@ router.get('/user_timeline', async function (ctx, next) {
 })
 
 router.get('/entry', async function (ctx, next) {
-  ctx.body = "ok" 
+  let n = ctx.session.views || 0;
+  ctx.session.views = ++n;
+ 
+  ctx.body = n + ' views';
 })
+ 
 
 module.exports = router
