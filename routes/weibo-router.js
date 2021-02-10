@@ -2,6 +2,7 @@ const axios = require('axios');
 const router = require('koa-router')() 
 const config = require('../config/weibo-config')
 const passport = require('l-passport');
+const WeiboSdk = require('../models/weibo-sdk-model');
 
 router.prefix('/weibo')
 
@@ -38,7 +39,7 @@ router.get('/login', async function (ctx, next) {
   // ctx.body = "ok";
 })
 
-router.get('/cb', function (ctx, next) {
+router.get('/cb', async function (ctx, next) {
   let url = ctx.url
   // 从上下文的request对象中获取
   let request = ctx.request
@@ -49,6 +50,28 @@ router.get('/cb', function (ctx, next) {
   // 从上下文中直接获取
   let ctx_query = ctx.query
   let ctx_querystring = ctx.querystring
+
+  let weiboSdkOld = await WeiboSdk.findOne({
+    where: {
+      appkey: config.appkey
+    }
+  });
+
+  if (!weiboSdkOld) {
+    let weiboSdkCreateRes = await WeiboSdk.create({
+      code: ctx.request.query.code,
+      appkey: config.appkey,
+      token: '0'
+    });
+  } else {
+    await WeiboSdk.update({
+      code: ctx.request.query.code
+    }, {
+      where: {
+        appkey: config.appkey
+      }
+    });
+  }
 
   ctx.body = {
     url,
