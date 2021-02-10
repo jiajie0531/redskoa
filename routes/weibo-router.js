@@ -3,6 +3,7 @@ const router = require('koa-router')()
 const config = require('../config/weibo-config')
 const passport = require('l-passport');
 const WeiboSdk = require('../models/weibo-sdk-model');
+const WeiboToken = require('../models/weibo-token-model');
 
 router.prefix('/weibo')
 
@@ -83,40 +84,105 @@ router.get('/cb', async function (ctx, next) {
 })
 
 router.get('/oauth2/access_token', async function (ctx, next) { 
+  let weiboSdkOld = await WeiboSdk.findOne({
+    where: {
+      appkey: config.appkey
+    }
+  });
+
+  let code = "0";
+  if (weiboSdkOld) {
+    code = weiboSdkOld.code;
+  }
   let url = 'https://api.weibo.com/oauth2/access_token?client_id=' + config.appkey + 
   '&client_secret=' + config.secret + 
   '&grant_type=authorization_code&redirect_uri=' + config.oauth_callback_url + 
-  '&code=f9ecd947740158d33eae094c9ac72c55'
+  '&code=' + code;
   
   await axios.post(url, {
   })
-  .then(function (response) {
+  .then(async function (response) {
     console.log(response);
-    ctx.body = response.data;
+    let { 
+      access_token,
+      remind_in,
+      expires_in,
+      uid,
+      isRealName
+    } = response.data;
+    // 返回成功添加的对象
+    let res = await WeiboToken.create({
+      access_token,
+      remind_in,
+      expires_in,
+      uid,
+      isRealName
+    })
+    ctx.status = 200
+    ctx.body = {
+      code: 200,
+      msg: res ? 'ok' : '',
+      data: response.data
+    }
   })
   .catch(function (error) {
     console.log(error);
   });
 })
 
-router.get('/users/show', function (ctx, next) { 
-  axios.get('https://api.weibo.com/2/users/show.json', {
+/**
+ * 根据用户ID获取用户信息
+ */
+router.get('/users/show', async function (ctx, next) {
+  let res = await WeiboToken.findAll({
+    raw: true,
+    limit: 1,
+    where: {
+      //your where conditions, or without them if you need ANY entry
+    },
+    order: [['id', 'DESC']]
+  });
+
+  // console.log('***')
+  // console.log(res)
+  // console.log('===')
+  // console.log(res.length)
+
+  if (!res) {
+    ctx.status = 200
+    ctx.body = {
+      code: 200,
+      msg: res ? 'ok' : '',
+      data: res
+    }
+  }
+
+  let lastToken = res[0].access_token;
+  let uid = res[0].uid
+  // console.log(lastToken);
+
+  await axios.get('https://api.weibo.com/2/users/show.json', {
     params: {
-      appkey: '1120585538',
-      access_token: '2.00JRBECCSUrpNBf94ad565f3jIhkBB',
-      uid: 1404376560  
+      appkey: config.appId,
+      access_token: lastToken,
+      uid: uid
     }
   })
   .then(function (response) {
-    console.log(response);  
+    console.log(response);
+    ctx.status = 200
+    ctx.body = {
+      code: 200,
+      msg: response ? 'ok' : '',
+      data: response.data
+    }
   })
   .catch(function (error) {
     console.log(error);
   })
   .then(function () {
-    // always executed
-  });  
-  
+      // always executed
+  });
 })
 
 router.get('/home_timeline', async function (ctx, next) { 
