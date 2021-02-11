@@ -141,12 +141,7 @@ router.get('/users/show', async function (ctx, next) {
       //your where conditions, or without them if you need ANY entry
     },
     order: [['id', 'DESC']]
-  });
-
-  // console.log('***')
-  // console.log(res)
-  // console.log('===')
-  // console.log(res.length)
+  }); 
 
   if (!res) {
     ctx.status = 200
@@ -158,6 +153,7 @@ router.get('/users/show', async function (ctx, next) {
   }
 
   let lastToken = res[0].access_token;
+  ctx.session.access_token = lastToken;
   let uid = res[0].uid
   // console.log(lastToken);
 
@@ -185,13 +181,43 @@ router.get('/users/show', async function (ctx, next) {
   });
 })
 
+/**
+ * statuses/home_timeline
+ * 获取当前登录用户及其所关注（授权）用户的最新微博
+ */
 router.get('/home_timeline', async function (ctx, next) { 
+  let res = await WeiboToken.findAll({
+    raw: true,
+    limit: 1,
+    where: {
+      //your where conditions, or without them if you need ANY entry
+    },
+    order: [['id', 'DESC']]
+  }); 
+
+  if (!res) {
+    ctx.status = 200
+    ctx.body = {
+      code: 200,
+      msg: res ? 'ok' : '',
+      data: res
+    }
+  }
+
+  let lastToken = res[0].access_token;
+  ctx.session.access_token = lastToken;
+  console.log('***')
+  console.log(ctx.session.access_token)
+  console.log('===')
+  
   let url = 'https://api.weibo.com/2/statuses/home_timeline.json';
 
   await axios.get(url, {
     params: { 
-      access_token: '2.00JRBECCSUrpNBf94ad565f3jIhkBB',
-      feature: 1  
+      access_token: lastToken,
+      feature: 0,
+      base_app: 0,
+      trim_user: 1 
     }
   })
   .then(function (response) {
@@ -214,6 +240,55 @@ router.get('/user_timeline', async function (ctx, next) {
       access_token: '2.00JRBECCSUrpNBf94ad565f3jIhkBB',
       uid: 1862776555,
       feature: 1  
+    }
+  })
+  .then(function (response) {
+    console.log(response); 
+    ctx.body = response.data; 
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
+  .then(function () {
+    // always executed
+  }); 
+})
+
+/**
+ * statuses/show
+ * 根据微博ID获取单条微博内容
+ */
+router.get('/statuses/show', async function (ctx, next) { 
+  let res = await WeiboToken.findAll({
+    raw: true,
+    limit: 1,
+    where: {
+      //your where conditions, or without them if you need ANY entry
+    },
+    order: [['id', 'DESC']]
+  }); 
+
+  if (!res) {
+    ctx.status = 200
+    ctx.body = {
+      code: 200,
+      msg: res ? 'ok' : '',
+      data: res
+    }
+  }
+
+  let lastToken = res[0].access_token;
+  ctx.session.access_token = lastToken;
+  console.log('***')
+  console.log(ctx.session.access_token)
+  console.log('===')
+  
+  let url = 'https://api.weibo.com/2/statuses/show.json';
+
+  await axios.get(url, {
+    params: { 
+      access_token: lastToken,
+      id: ctx.request.query.id 
     }
   })
   .then(function (response) {
