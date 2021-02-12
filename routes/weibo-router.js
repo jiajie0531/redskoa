@@ -3,7 +3,9 @@ const router = require('koa-router')()
 const config = require('../config/weibo-config')
 const passport = require('l-passport');
 const WeiboSdk = require('../models/weibo-sdk-model');
+const WeiboText = require('../models/weibo-text-model')
 const WeiboToken = require('../models/weibo-token-model');
+var md5 = require('md5');
 
 router.prefix('/weibo')
 
@@ -215,14 +217,44 @@ router.get('/home_timeline', async function (ctx, next) {
   await axios.get(url, {
     params: { 
       access_token: lastToken,
+      count: 99,
       feature: 0,
       base_app: 0,
       trim_user: 1 
     }
   })
-  .then(function (response) {
-    console.log(response); 
-    ctx.body = response.data; 
+  .then(async function (response) {
+    console.log(response.data.statuses); 
+    response.data.statuses.forEach(element => {
+      let { 
+        uid,
+        mid,
+        text,
+        textLength,
+        thumbnail_pic,
+        bmiddle_pic,
+        original_pic
+      } = element;
+      let textMd5 = md5(text);
+      // 返回成功添加的对象
+      let res = WeiboText.create({
+        uid,
+        mid,
+        text,
+        textLength,
+        textMd5,
+        thumbnail_pic,
+        bmiddle_pic,
+        original_pic
+      })
+    });
+
+    ctx.status = 200
+    ctx.body = {
+      code: 200,
+      msg: 'ok',
+      data: response.data
+    }
   })
   .catch(function (error) {
     console.log(error);
