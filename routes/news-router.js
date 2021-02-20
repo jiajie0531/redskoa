@@ -1,5 +1,6 @@
 const router = require('koa-router')()
 const WeiboText = require('../models/weibo-text-model');
+const { Op } = require("sequelize");
 
 router.prefix('/news')
 
@@ -10,7 +11,11 @@ router.get("/list", async function(ctx){
   if (ctx.query.page_index) page_index = Number(ctx.query.page_index) 
 
   let items = await WeiboText.findAndCountAll({
-    where: {},
+    where: {
+      textLength: {
+        [Op.gt]: 0
+      }
+    },
     order: [
       ['id', 'desc']
     ],

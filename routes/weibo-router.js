@@ -6,6 +6,7 @@ const WeiboSdk = require('../models/weibo-sdk-model');
 const WeiboText = require('../models/weibo-text-model')
 const WeiboToken = require('../models/weibo-token-model');
 const md5 = require('md5'); 
+const jregex = require('../lib/jregex');
 
 router.prefix('/weibo')
 
@@ -236,7 +237,10 @@ router.get('/home_timeline', async function (ctx, next) {
         original_pic
       } = element;
       let textMd5 = md5(text); 
-      let textHref = ""; 
+      let textHref = jregex.urlify(text); 
+      if (textLength == null) {
+        textLength = 0;
+      }
       // 返回成功添加的对象
       let res = WeiboText.create({
         uid,
