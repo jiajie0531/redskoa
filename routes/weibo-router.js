@@ -5,8 +5,7 @@ const passport = require('l-passport');
 const WeiboSdk = require('../models/weibo-sdk-model');
 const WeiboText = require('../models/weibo-text-model')
 const WeiboToken = require('../models/weibo-token-model');
-const md5 = require('md5');
-const getUrls = require('get-urls');
+const md5 = require('md5'); 
 
 router.prefix('/weibo')
 
@@ -236,12 +235,8 @@ router.get('/home_timeline', async function (ctx, next) {
         bmiddle_pic,
         original_pic
       } = element;
-      let textMd5 = md5(text);
-      let filterUrls = getUrls(text);
-      let textHref = "";
-      if (filterUrls.size > 0) {
-        textHref = Array.from(filterUrls)[0]
-      }
+      let textMd5 = md5(text); 
+      let textHref = ""; 
       // 返回成功添加的对象
       let res = WeiboText.create({
         uid,
