@@ -15,6 +15,7 @@ var config = {
     // 默认情况下, destroy() 方法会删除数据，设置 paranoid 为 true 时，将会更新 deletedAt 字段，并不会真实删除数据。
     paranoid: false
   },
+  timezone: "+08:00",
   dialect:"mysql"
 }
 
