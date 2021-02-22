@@ -14,8 +14,7 @@ module.exports = db.define("weibo_text",{
   },
   mid:{
     type:DataTypes.STRING(50),
-    allowNull:false,
-    unique: true
+    allowNull:false 
   },
   text:{
     type:DataTypes.TEXT,
@@ -47,5 +46,5 @@ module.exports = db.define("weibo_text",{
   }
 },{
   freezeTableName:true,
-  timestamps:true
+  timestamps:true 
 });
