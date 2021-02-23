@@ -9,8 +9,11 @@ module.exports = db.define("weibo_text",{
     autoIncrement:true
   }, 
   uid:{
-    type:DataTypes.STRING(50),
-    allowNull:false
+    type:DataTypes.STRING(50) 
+  },
+  uname:{
+    type:DataTypes.STRING(128),
+    allowNull:true
   },
   mid:{
     type:DataTypes.STRING(50),
@@ -26,7 +29,8 @@ module.exports = db.define("weibo_text",{
   },
   textMd5:{
     type:DataTypes.STRING(50),
-    allowNull:false
+    allowNull:false,
+    unique: true 
   },
   textHref:{
     type:DataTypes.STRING(255),
@@ -46,5 +50,5 @@ module.exports = db.define("weibo_text",{
   }
 },{
   freezeTableName:true,
-  timestamps:true 
+  timestamps:true
 });

@@ -158,6 +158,7 @@ router.get('/users/show', async function (ctx, next) {
   let lastToken = res[0].access_token;
   ctx.session.access_token = lastToken;
   let uid = res[0].uid
+  if (ctx.query.uid) uid = Number(ctx.query.uid)
   // console.log(lastToken);
 
   await axios.get('https://api.weibo.com/2/users/show.json', {
@@ -221,14 +222,14 @@ router.get('/home_timeline', async function (ctx, next) {
       count: 99,
       feature: 0,
       base_app: 0,
-      trim_user: 1 
+      trim_user: 0 
     }
   })
   .then(async function (response) {
     console.log(response.data.statuses); 
     response.data.statuses.forEach(element => {
       let { 
-        uid,
+        user,
         mid,
         text,
         textLength,
@@ -241,9 +242,12 @@ router.get('/home_timeline', async function (ctx, next) {
       if (textLength == null) {
         textLength = 0;
       }
+      let uid = user.id;
+      let uname = user.name;
       // 返回成功添加的对象
       let res = WeiboText.create({
         uid,
+        uname,
         mid,
         text,
         textLength,
