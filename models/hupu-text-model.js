@@ -28,7 +28,7 @@ module.exports = db.define("hupu_text",{
     type:DataTypes.STRING(255),
     allowNull:false
   }, 
-  name:{
+  uname:{
     type:DataTypes.STRING(128),
     allowNull:false
   },
