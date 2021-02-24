@@ -12,6 +12,7 @@
   "dependencies": {
     "@koa/router": "^10.0.0",
     "axios": "^0.21.1",
+    "cheerio": "^1.0.0-rc.5",
     "connect": "^3.7.0",
     "debug": "^4.1.1",
     "koa": "^2.7.0",
