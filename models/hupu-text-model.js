@@ -32,6 +32,10 @@ module.exports = db.define("hupu_text",{
     type:DataTypes.STRING(128),
     allowNull:false
   },
+  detail:{
+    type:DataTypes.TEXT,
+    allowNull:true
+  },
   isDetailed:{
     type:DataTypes.INTEGER(11),
     allowNull:false,
