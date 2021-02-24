@@ -21,7 +21,10 @@ router.get('/title/list', async function (ctx, next) {
         news.title = $(this).find('a.truetit').html();
         news.titleMd5 = md5($(this).find('a.truetit').html()); 
         news.href = 'https://bbs.hupu.com' + $(this).find('a.truetit').attr('href');
-
+        news.name = 'hupu';
+        news.isDetailed = 0;
+        news.isSynced = 0;
+        
         newsData.push(news);
       }
     });

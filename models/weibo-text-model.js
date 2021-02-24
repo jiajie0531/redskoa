@@ -29,8 +29,7 @@ module.exports = db.define("weibo_text",{
   },
   textMd5:{
     type:DataTypes.STRING(50),
-    allowNull:false,
-    unique: true 
+    allowNull:false 
   },
   textHref:{
     type:DataTypes.STRING(255),
@@ -50,5 +49,6 @@ module.exports = db.define("weibo_text",{
   }
 },{
   freezeTableName:true,
-  timestamps:true
+  timestamps:true,
+  indexes: [{unique: true, fields: ['textMd5']}]
 });
