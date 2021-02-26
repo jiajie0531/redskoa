@@ -16,7 +16,11 @@ var config = {
     paranoid: false
   },
   timezone: "+08:00",
-  dialect:"mysql"
+  dialect:"mysql",
+  dialectOptions: {
+    // Your mariadb options here
+    connectTimeout: 60000
+  }
 }
 
 module.exports = config;
