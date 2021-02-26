@@ -34,7 +34,7 @@ router.get('/title/list', async function (ctx, next) {
           let md5count = await HupuText.count({
             where: {
               titleMd5: {
-                [Op.gt]: titleMd5
+                [Op.eq]: titleMd5
               }
             }
           });
