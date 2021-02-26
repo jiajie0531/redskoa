@@ -35,6 +35,10 @@ module.exports = db.define("weibo_text",{
     type:DataTypes.STRING(255),
     allowNull:true
   },
+  textDetail:{
+    type:DataTypes.TEXT,
+    allowNull:true
+  },
   thumbnail_pic:{
     type:DataTypes.STRING(255),
     allowNull:true

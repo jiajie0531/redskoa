@@ -4,6 +4,7 @@ const cheerio = require('cheerio');
 const md5 = require('md5');
 const { Op } = require("sequelize");
 const HupuText = require('../models/hupu-text-model');
+const WeiboText = require('../models/weibo-text-model');
 
 router.prefix('/hupu')
 
@@ -118,5 +119,85 @@ router.get('/title/info', async function (ctx, next) {
     msg: 'ok'
   }
 })
+
+router.get('/title/sync', async function (ctx, next) {
+  let whereObj = {}
+  let page_size = 2, page_index = 1;
+  if (ctx.query.page_size) page_size = Number(ctx.query.page_size)
+  if (ctx.query.page_index) page_index = Number(ctx.query.page_index)
+
+  let items = await HupuText.findAll({
+    where: {
+      isDetailed: {
+        [Op.eq]: 1
+      },
+      isSynced: {
+        [Op.eq]: 0
+      }
+    },
+    order: [
+      ['id', 'desc']
+    ],
+    limit: page_size,
+    offset: (page_index - 1) * page_size,
+    distinct: true
+  });
+
+  // console.log(items);
+
+  await items.forEach(async it => {
+    console.log('*** ');
+    console.log(it.dataValues);
+
+    let {
+      uname,
+      id,
+      title,
+      titleMd5,
+      titleLength,
+      href,
+      detail 
+    } = it.dataValues
+
+    let uid = 0; 
+    let mid = 'hupu_' + id; 
+    let text = title;
+    let textLength = titleLength;
+    let textMd5 = titleMd5;
+    let textHref = href;
+    let thumbnail_pic ='';
+    let bmiddle_pic ='';
+    let original_pic ='';
+    let textDetail = detail;
+ 
+    // 返回成功添加的对象
+    await WeiboText.create({
+      uid,
+      uname,
+      mid,
+      text,
+      textLength,
+      textMd5,
+      textHref,
+      thumbnail_pic,
+      bmiddle_pic,
+      original_pic,
+      textDetail
+    });
+
+    await HupuText.update({ isSynced:1 }, {
+      where: {
+        id: it.dataValues.id
+      }
+    });
+  });
+
+  ctx.status = 200
+  ctx.body = {
+    code: 200,
+    msg: 'ok'
+  }
+})
+
 
 module.exports = router
