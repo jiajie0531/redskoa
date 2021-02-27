@@ -12,8 +12,7 @@ router.get('/title/list', async function (ctx, next) {
   await axios.get('https://bbs.hupu.com/manutd')
     .then(async function (response) {
       // console.log(response);
-      let $ = cheerio.load(response.data); 
-      let textCount = 0;
+      let $ = cheerio.load(response.data);  
       $('div > ul > li > div').each(async function (i, e) {
         if ($(this).find('a.truetit').html()) { 
           let news = {};
@@ -42,12 +41,10 @@ router.get('/title/list', async function (ctx, next) {
               href: news.href,
               hrefUrl: hrefUrl,
               uname: news.uname
-            })
-            textCount++;
+            }) 
           }
         }
-      }); 
-      return textCount;
+      });  
     }).then(async function (response) {
       // console.log(response);
       ctx.status = 200
