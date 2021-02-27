@@ -13,9 +13,15 @@
                 "inputs": {
                     "name": "redskoa",
                     "path": "/redskoa",
-                    "entry": "app.js"
+                    "entry": "app.js",
+                    "platform": "function",
+                    "functionOptions": {
+                        "timeout": 60,
+                        "runtime": "Nodejs10.15",
+                        "memorySize": 256
+                    }
                 }
-            }  
+            }
         }
     }
 }
