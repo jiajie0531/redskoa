@@ -122,7 +122,7 @@ router.get('/title/info', async function (ctx, next) {
 
 router.get('/title/sync', async function (ctx, next) {
   let whereObj = {}
-  let page_size = 2, page_index = 1;
+  let page_size = 1, page_index = 1;
   if (ctx.query.page_size) page_size = Number(ctx.query.page_size)
   if (ctx.query.page_index) page_index = Number(ctx.query.page_index)
 
@@ -146,8 +146,8 @@ router.get('/title/sync', async function (ctx, next) {
   // console.log(items);
 
   await items.forEach(async it => {
-    console.log('*** ');
-    console.log(it.dataValues);
+    //console.log('*** ');
+    //console.log(it.dataValues);
 
     let {
       uname,
@@ -169,22 +169,31 @@ router.get('/title/sync', async function (ctx, next) {
     let bmiddle_pic ='';
     let original_pic ='';
     let textDetail = detail;
- 
-    // 返回成功添加的对象
-    await WeiboText.create({
-      uid,
-      uname,
-      mid,
-      text,
-      textLength,
-      textMd5,
-      textHref,
-      thumbnail_pic,
-      bmiddle_pic,
-      original_pic,
-      textDetail
+
+    const amount = await WeiboText.count({
+      where: {
+        textMd5: {
+          [Op.eq]: titleMd5
+        }
+      }
     });
 
+    if (amount == 0) {
+      await WeiboText.create({
+        uid,
+        uname,
+        mid,
+        text,
+        textLength,
+        textMd5,
+        textHref,
+        thumbnail_pic,
+        bmiddle_pic,
+        original_pic,
+        textDetail
+      });
+    }
+ 
     await HupuText.update({ isSynced:1 }, {
       where: {
         id: it.dataValues.id
