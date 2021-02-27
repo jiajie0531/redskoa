@@ -12,14 +12,10 @@ router.get('/title/list', async function (ctx, next) {
   await axios.get('https://bbs.hupu.com/manutd')
     .then(async function (response) {
       // console.log(response);
-      let $ = cheerio.load(response.data);
-      let newsData = [];
+      let $ = cheerio.load(response.data); 
+      let textCount = 0;
       $('div > ul > li > div').each(async function (i, e) {
-        if ($(this).find('a.truetit').html()) {
-          // console.log(i + 
-          //   ':' + $(this).find('a.truetit').html() +  
-          //   ':' + 'https://bbs.hupu.com' + $(this).find('a.truetit').attr('href')) 
-
+        if ($(this).find('a.truetit').html()) { 
           let news = {};
           news.title = $(this).find('a.truetit').html();
           let titleMd5 = md5($(this).find('a.truetit').html());
@@ -28,9 +24,7 @@ router.get('/title/list', async function (ctx, next) {
           news.href = 'https://bbs.hupu.com' + hrefUrl;
           news.uname = 'hupu';
           news.isDetailed = 0;
-          news.isSynced = 0;
-
-          newsData.push(news);
+          news.isSynced = 0; 
 
           let md5count = await HupuText.count({
             where: {
@@ -41,7 +35,7 @@ router.get('/title/list', async function (ctx, next) {
           });
 
           if (md5count == 0) {
-            let res = HupuText.create({
+            await HupuText.create({
               title: news.title,
               titleMd5: news.titleMd5,
               titleLength: news.title.length,
@@ -49,16 +43,17 @@ router.get('/title/list', async function (ctx, next) {
               hrefUrl: hrefUrl,
               uname: news.uname
             })
+            textCount++;
           }
         }
-      });
-      return newsData;
+      }); 
+      return textCount;
     }).then(async function (response) {
       // console.log(response);
       ctx.status = 200
       ctx.body = {
         code: 200,
-        msg: response ? 'ok' : '',
+        msg: 'ok',
         data: response
       }
     })
@@ -69,7 +64,7 @@ router.get('/title/list', async function (ctx, next) {
 
 router.get('/title/info', async function (ctx, next) {
   let whereObj = {}
-  let page_size = 20, page_index = 1;
+  let page_size = 3, page_index = 1;
   if (ctx.query.page_size) page_size = Number(ctx.query.page_size)
   if (ctx.query.page_index) page_index = Number(ctx.query.page_index)
 
@@ -88,7 +83,7 @@ router.get('/title/info', async function (ctx, next) {
   })
 
   // console.log(items);
-
+  let infoCount = 0;
   await items.forEach(async it => {
     // console.log(it.dataValues);
     let url = it.dataValues.href;
@@ -106,6 +101,8 @@ router.get('/title/info', async function (ctx, next) {
               id: it.dataValues.id
             }
           });
+          infoCount += 1;
+          console.log('*** infoCount is ' + infoCount);
         });
       })
       .catch(function (error) {
@@ -113,10 +110,12 @@ router.get('/title/info', async function (ctx, next) {
       });
   });
 
+  console.log('=== infoCount is ' + infoCount);
   ctx.status = 200
   ctx.body = {
     code: 200,
-    msg: 'ok'
+    msg: 'ok',
+    data: infoCount
   }
 })
 
