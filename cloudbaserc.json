@@ -19,7 +19,7 @@
             "server": {
                 "use": "@cloudbase/framework-plugin-function",
                 "inputs": {
-                    "functionRootPath": "cloudfunctions",
+                    "functionRootPath": "./functions",
                     "functions": [{
                       "name": "redskoa",
                       "config": {
@@ -29,7 +29,7 @@
                         "memorySize": 256
                       }
                     }]
-                  }
+                }
             }
         }
     }
