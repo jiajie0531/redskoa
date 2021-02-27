@@ -19,7 +19,7 @@
             "server": {
                 "use": "@cloudbase/framework-plugin-function",
                 "inputs": {
-                    "functionRootPath": "./functions",
+                    "functionRootPath": "/redskoa",
                     "functions": [{
                       "name": "redskoa",
                       "config": {
