@@ -45,6 +45,10 @@ module.exports = db.define("baidu_text",{
     type:DataTypes.STRING(50),
     allowNull:false
   },
+  detail:{
+    type:DataTypes.TEXT,
+    allowNull:true
+  },
   isDetailed:{
     type:DataTypes.INTEGER(11),
     allowNull:false,
